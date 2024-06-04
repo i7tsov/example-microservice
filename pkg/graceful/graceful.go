@@ -65,14 +65,14 @@ func Run(cfg Config, funcs ...func(context.Context) error) error {
 	if cfg.Timeout == 0 {
 		cfg.Timeout = defaultTimeout
 	}
-	var ctx context.Context
+	ctx := context.Background()
 	if cfg.Context != nil {
 		ctx = *cfg.Context
 	}
 	if len(cfg.Signals) == 0 {
 		cfg.Signals = []os.Signal{os.Interrupt, os.Kill, syscall.SIGHUP}
 	}
-	ctx, cancel := signal.NotifyContext(context.Background(), cfg.Signals...)
+	ctx, cancel := signal.NotifyContext(ctx, cfg.Signals...)
 
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(funcs))
